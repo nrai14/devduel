@@ -5,7 +5,9 @@ from flask import Flask, request
 app = Flask(__name__)
 
 # == Your Routes Here ==
-
+@app.route('/', methods=['GET'])
+def get_home():
+    return "hello jasmine!"
 
 # These lines start the server if you run this file directly
 # They also start the server configured to use the test database
