@@ -10,8 +10,8 @@ from psycopg.rows import dict_row
 # If the below seems too complex right now, that's OK.
 # That's why we have provided it!
 class DatabaseConnection:
-    DEV_DATABASE_NAME = "DEV_DUAL"
-    TEST_DATABASE_NAME = "DEV_DUAL_TEST"
+    DEV_DATABASE_NAME = "DEV_DUEL"
+    TEST_DATABASE_NAME = "DEV_DUEL_TEST"
 
     def __init__(self, test_mode=False):
         self.test_mode = test_mode
