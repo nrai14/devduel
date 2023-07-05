@@ -1,3 +1,4 @@
+import pytest
 from lib.card import Card
 from lib.card_repository import CardRepository
 
@@ -106,3 +107,68 @@ def test_find_by_job_availability(db_connection):
         Card(20, 'Perl', 35, 46342, 148867, 6, 1)
     ]
     assert cards == expected_cards
+
+"""
+When we call CardRepository #find_by_language_name that's not avaliable
+Raised Exception error
+"""
+def tests_get_language_name_that_is_not_listed(db_connection):
+    db_connection.seed("seeds/deck.sql")
+    repository = CardRepository(db_connection)
+
+    with pytest.raises(Exception) as err:
+            repository.find_by_language_name("BF")
+    error_message = str(err.value)
+    assert error_message == "Coding language not listed, please try again."
+
+"""
+When we call CardRepository #find_by_age that's not avaliable
+Raised Exception error
+"""
+def tests_get_age_that_is_not_listed(db_connection):
+    db_connection.seed("seeds/deck.sql")
+    repository = CardRepository(db_connection)
+
+    with pytest.raises(Exception) as err:
+            repository.find_by_age(100)
+    error_message = str(err.value)
+    assert error_message == "Coding age not listed, please try again."
+
+"""
+When we call CardRepository #find_by_av_salary that's not avaliable
+Raised Exception error
+"""
+def tests_get_av_salary_that_is_not_listed(db_connection):
+    db_connection.seed("seeds/deck.sql")
+    repository = CardRepository(db_connection)
+
+    with pytest.raises(Exception) as err:
+            repository.find_by_av_salary(1000000)
+    error_message = str(err.value)
+    assert error_message == "Average salary not listed, please try again."
+
+"""
+When we call CardRepository #find_by_downloads that's not avaliable
+Raised Exception error
+"""
+def tests_get_downloads_that_is_not_listed(db_connection):
+    db_connection.seed("seeds/deck.sql")
+    repository = CardRepository(db_connection)
+
+    with pytest.raises(Exception) as err:
+            repository.find_by_downloads(394329746847)
+    error_message = str(err.value)
+    assert error_message == "Download not listed, please try again."
+
+"""
+When we call CardRepository #find_by_popularity that's not avaliable
+Raised Exception error
+"""
+def tests_get_popularity_that_is_not_listed(db_connection):
+    db_connection.seed("seeds/deck.sql")
+    repository = CardRepository(db_connection)
+
+    with pytest.raises(Exception) as err:
+            repository.find_by_popularity(394329746847)
+    error_message = str(err.value)
+    assert error_message == "Popularity not listed, please try again."

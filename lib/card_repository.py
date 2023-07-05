@@ -77,3 +77,4 @@ class CardRepository:
              item = Card(row["id"], row["language_name"], row["age"], row["av_salary"], row["downloads"], row["popularity"], row["job_availability"])
              cards.append(item)
         return cards
+    
