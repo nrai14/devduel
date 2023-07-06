@@ -1,3 +1,4 @@
+# from dotenv import load_dotenv
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -37,7 +38,7 @@ def handle_username(username):
             client_sids[username] = request.sid
             emit("data", client_decks[username][0], to=request.sid)
 
-
+# incomplete
 @socketio.on("disconnect")
 def handle_disconnect(username):
     if username in client_usernames:
@@ -61,3 +62,19 @@ def handle_message(data):
 
 if __name__ == "__main__":
     socketio.run(app)
+
+# when the leading player's chosen attribute value is higher than the opposing player's
+# the opposing player's card goes to the leading player's card
+
+# when the opposing player's value is higher than the leading player's
+# leading player's card goes to the opposing player
+# the opposing player becomes the leading player
+
+# if the chosen card attribute has the same value for each player
+# delete both players' cards
+
+# when either player runs out of cards
+# or when the timer reaches 0 
+# the game ends
+
+# when game ends 
