@@ -5,6 +5,6 @@ def transfer_card(from_deck, to_deck):
     from_deck.remove(from_deck[0])
 
 
-def remove_both(deck, other_deck):
+def remove_both_cards(deck, other_deck):
     deck = deck[1:]
     other_deck = other_deck[1:]

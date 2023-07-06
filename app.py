@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import random
-from helpers.adjust_deck import transfer_card, remove_both
+from helpers.adjust_deck import transfer_card, remove_both_cards
 from lib.database_connection import get_flask_database_connection
 from lib.card_repository import CardRepository
 
@@ -92,7 +92,7 @@ def handle_message(data):
 
         else:
             print("both players lose their card")
-            remove_both(leading_deck, non_leading_deck)
+            remove_both_cards(leading_deck, non_leading_deck)
             new_leading_player = leading_player
 
         if client_decks[non_leading_player]:
