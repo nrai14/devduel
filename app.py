@@ -1,8 +1,7 @@
-# from dotenv import load_dotenv
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-from cards import cards_player_1, cards_player_2
+from decks import cards_player_1, cards_player_2
 from helpers.transfer_card import transfer_card
 
 app = Flask(__name__)
@@ -37,6 +36,7 @@ def handle_username(username):
         elif client_usernames[1] == username:
             client_sids[username] = request.sid
             emit("data", client_decks[username][0], to=request.sid)
+
 
 # incomplete
 @socketio.on("disconnect")
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 # delete both players' cards
 
 # when either player runs out of cards
-# or when the timer reaches 0 
+# or when the timer reaches 0
 # the game ends
 
-# when game ends 
+# when game ends
