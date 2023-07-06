@@ -36,13 +36,6 @@ Winner goes first next round
 '''
 @app.route("/gameplay", methods=["GET", "POST"])
 # define the countdown func.
-# def countdown(t):
-#     while t:
-#         mins, secs = divmod(t, 60)
-#         timer = '{:02d}:{:02d}'.format(mins, secs)
-#         print(timer, end="\r")
-#         time.sleep(1)
-#         t -= 1
 
 def game():
     connection = get_flask_database_connection(app)
@@ -61,7 +54,6 @@ def game():
     repository = CardRepository(connection)
 
     # 5 minute timer starts
-    #countdown(int(300))
     duration = 300
     start_time = time.time()
         
