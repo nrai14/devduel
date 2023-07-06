@@ -3,4 +3,4 @@ __pycache__
 .pytest_cache
 Pipfile
 Pipfile.lock
-venv
+venv/
