@@ -4,6 +4,7 @@ import os
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from cards import cards_player_1, cards_player_2
+import random
 
 load_dotenv()
 
@@ -16,6 +17,37 @@ clients = []
 @app.route("/")
 def index():
     return "Hello, World!"
+
+'''
+Card decks have 10 random cards each
+Players receive 1 deck each
+Top card on Player 1's deck is selected
+5 minute timer starts
+Player 1 selects an attribute for comparison
+Highest attribute wins
+Loser's card added to winner's deck
+If draw, both cards added to black hole
+Winner goes first next round
+'''
+@app.route("/gameplay", methods=["GET", "POST"])
+def create_randomised_deck():
+    all_card_ids = list(range(1, 21))
+    random.shuffle(all_card_ids)
+    print(all_card_ids)
+    return all_card_ids
+
+def game():
+    # Generate decks for each player
+    full_deck = create_randomised_deck()
+    player_1_deck = full_deck[0:10]
+    player_2_deck = full_deck[11:21]
+    print(player_1_deck)
+    print(player_2_deck)
+
+    
+
+
+
 
 
 @socketio.on("username")
