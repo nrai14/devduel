@@ -3,23 +3,26 @@ import requests
 
 
 class CardRepository:
-    def __init__(self, connection, requester) -> None:
+    def __init__(self, connection) -> None:
         self._connection = connection
-        self.requester = requester
+        # self.requester = requester
 
     def all(self):
         rows = self._connection.execute("SELECT * from cards ORDER BY id")
         cards = []
         for row in rows:
-            item = Card(
-                row["id"],
-                row["language_name"],
-                row["age"],
-                row["av_salary"],
-                row["downloads"],
-                row["popularity"],
-                row["job_availability"],
-            )
+            item = {
+                "id": row["id"],
+                "name": row["language_name"],
+                "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",  # replace with actual image url
+                "stats": {
+                    "age": row["age"],
+                    "avg_salary": row["av_salary"],
+                    "downloads": row["downloads"],
+                    "popularity": row["popularity"],
+                    "job_availability": row["job_availability"],
+                },
+            }
             cards.append(item)
         return cards
 
