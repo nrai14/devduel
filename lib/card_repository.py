@@ -1,10 +1,10 @@
-from card import Card
+from lib.card import Card
 import requests
 
 class CardRepository:
-    def __init__(self, connection, requester) -> None:
+    def __init__(self, connection) -> None:
         self._connection = connection
-        self.requester = requester
+        # self.requester = requester
         
     def all(self):
         rows = self._connection.execute('SELECT * from cards ORDER BY id')
@@ -13,6 +13,28 @@ class CardRepository:
             item = Card(row["id"], row["language_name"], row["age"], row["av_salary"], row["downloads"], row["popularity"], row["job_availability"])
             cards.append(item)
         return cards
+    
+    def find_by_id(self, id):
+        rows = self._connection.execute(
+                'SELECT * from cards WHERE id = %s', [id])
+        if not rows:
+                raise Exception("ID not listed, please try again.")
+        card = rows[0]
+        return Card(card["id"], card["language_name"], card["age"], card["av_salary"], card["downloads"], card["popularity"], card["job_availability"])
+        
+    def get_attribute_value(self, card, attribute):
+        if attribute == "age":
+            return card.age
+        elif attribute == "av_salary":
+            return card.av_salary
+        elif attribute == "downloads":
+            return card.downloads
+        elif attribute == "popularity":
+            return card.popularity
+        elif attribute == "job_availability":
+            return card.job_availability
+        else:
+            raise Exception("Attribute not found")
     
     def find_by_language_name(self, language_name):
         rows = self._connection.execute(
@@ -80,29 +102,29 @@ class CardRepository:
             cards.append(item)
         return cards
     
-    def update_all_job_availabilities(self):
-        api_url = self.requester.get('https://www.reed.co.uk/api/1.0/search?keywords={keywords}')
-        cards = self.all()
+    # def update_all_job_availabilities(self):
+    #     api_url = self.requester.get('https://www.reed.co.uk/api/1.0/search?keywords={keywords}')
+    #     cards = self.all()
 
-        for card in cards:
-            programming_language = card.language_name
+    #     for card in cards:
+    #         programming_language = card.language_name
 
-            # Make the API request to reed.co.uk
-            response = requests.get(api_url, params={
-                "keywords": programming_language
-            })
+    #         # Make the API request to reed.co.uk
+    #         response = requests.get(api_url, params={
+    #             "keywords": programming_language
+    #         })
 
-            if response.status_code == 200:
-                job_listings = response.json()["results"]
-                job_availability = len(job_listings)
+    #         if response.status_code == 200:
+    #             job_listings = response.json()["results"]
+    #             job_availability = len(job_listings)
 
-                # Update the job_availability field for the current card in the database
-                self.update_card_job_availability(card.id, job_availability)
-            else:
-                raise Exception("Error")
+    #             # Update the job_availability field for the current card in the database
+    #             self.update_card_job_availability(card.id, job_availability)
+    #         else:
+    #             raise Exception("Error")
             
-        return response.json()
+    #     return response.json()
 
-    def update_card_job_availability(self, card_id, job_availability):
-        update_query = "UPDATE cards SET job_availability = %s WHERE id = %s"
-        self._connection.execute(update_query, [job_availability, card_id])
+    # def update_card_job_availability(self, card_id, job_availability):
+    #     update_query = "UPDATE cards SET job_availability = %s WHERE id = %s"
+    #     self._connection.execute(update_query, [job_availability, card_id])

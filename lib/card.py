@@ -9,3 +9,6 @@ class Card:
     downloads: int
     popularity: int
     job_availability: int
+
+    def get_id(self):
+        return self.id

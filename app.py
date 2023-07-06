@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import os
@@ -5,6 +6,10 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from cards import cards_player_1, cards_player_2
 import random
+
+from lib.database_connection import get_flask_database_connection
+# from lib.card import Card
+from lib.card_repository import CardRepository
 
 load_dotenv()
 
@@ -30,25 +35,92 @@ If draw, both cards added to black hole
 Winner goes first next round
 '''
 @app.route("/gameplay", methods=["GET", "POST"])
-def create_randomised_deck():
-    all_card_ids = list(range(1, 21))
-    random.shuffle(all_card_ids)
-    print(all_card_ids)
-    return all_card_ids
+# define the countdown func.
+# def countdown(t):
+#     while t:
+#         mins, secs = divmod(t, 60)
+#         timer = '{:02d}:{:02d}'.format(mins, secs)
+#         print(timer, end="\r")
+#         time.sleep(1)
+#         t -= 1
 
 def game():
+    connection = get_flask_database_connection(app)
+
     # Generate decks for each player
-    full_deck = create_randomised_deck()
+    full_deck = list(range(1, 21))
+    random.shuffle(full_deck)
+
+    # full_deck = create_randomised_deck()
     player_1_deck = full_deck[0:10]
-    player_2_deck = full_deck[11:21]
-    print(player_1_deck)
-    print(player_2_deck)
+    player_2_deck = full_deck[10:20]
+    black_hole = []
+    print(f"PLAYER 1 DECK: {player_1_deck}")
+    print(f"PLAYER 2 DECK: {player_2_deck}")
 
+    repository = CardRepository(connection)
+
+    # 5 minute timer starts
+    #countdown(int(300))
+    duration = 300
+    start_time = time.time()
+        
+    while len(player_1_deck) != 0 and len(player_2_deck) != 0:
+        # Exit out of the game loop if play exceeds 5 minutes
+        if time.time() - start_time > duration:
+            print("Timeout")
+            break
+
+        # Select first card from players' decks
+        card_1_id = player_1_deck[0]
+        card_2_id = player_2_deck[0]
+        print(f"PLAYER 1 CARD ID: {card_1_id}")
+        print(f"PLAYER 2 CARD ID: {card_2_id}")
+        
+        player_1_card = repository.find_by_id(card_1_id)
+        player_2_card = repository.find_by_id(card_2_id)
+
+
+        # Player 1 selects an attribute
+        # selected_attribute = request.args.get('selected_attribute')
+        selected_attribute = "age"
+
+        # Compare attributes from both cards
+        player_1_value = repository.get_attribute_value(player_1_card, selected_attribute)
+        player_2_value = repository.get_attribute_value(player_2_card, selected_attribute)
+        print(f"AGE 1: {player_1_value}")
+        print(f"AGE 2: {player_2_value}")
+
+        if player_1_value > player_2_value:
+            winner = "player 1"
+            losing_card_id = card_2_id
+        elif player_2_value > player_1_value:
+            winner = "player 2"
+            losing_card_id = card_1_id
+        else:
+            winner = "draw"
+
+        if winner == "player 1":
+            player_1_deck.append(losing_card_id)
+            player_2_deck.remove(losing_card_id)
+            player_1_deck = player_1_deck[1:]
+            player_1_deck.append(card_1_id)
+        elif winner == "player 2":
+            player_2_deck.append(losing_card_id)
+            player_1_deck.remove(losing_card_id)
+            player_2_deck = player_2_deck[1:]
+            player_2_deck.append(card_2_id)
+        else:
+            black_hole.append(card_1_id)
+            black_hole.append(card_2_id)
+            player_1_deck.remove(card_1_id)
+            player_2_deck.remove(card_2_id)
+
+        print("player 1 deck", player_1_deck)
+        print("player 2 deck", player_2_deck)
+        print("black hole", black_hole)
     
-
-
-
-
+    return str(player_1_deck)
 
 @socketio.on("username")
 def handle_username(username):
