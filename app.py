@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+import os
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from cards import cards_player_1, cards_player_2
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:5173")
