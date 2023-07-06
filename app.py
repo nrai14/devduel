@@ -84,16 +84,22 @@ def handle_message(data):
             print("transfer card from non-leading to leading player")
             transfer_card(non_leading_deck, leading_deck)
             new_leading_player = leading_player
+            emit("message", "You won this round!", to=client_sids[leading_player])
+            emit("message", "You lost this round!", to=client_sids[non_leading_player])
 
         elif non_leading_value > leading_value:
             print("transfer card from leading player to non-leading player")
             transfer_card(leading_deck, non_leading_deck)
             new_leading_player = non_leading_player
+            emit("message", "You won this round!", to=client_sids[non_leading_player])
+            emit("message", "You lost this round!", to=client_sids[leading_player])
 
         else:
             print("both players lose their card")
             remove_both_cards(leading_deck, non_leading_deck)
             new_leading_player = leading_player
+            emit("message", "It's a tie!", to=client_sids[leading_player])
+            emit("message", "It's a tie!", to=client_sids[non_leading_player])
 
         if client_decks[non_leading_player]:
             emit(
