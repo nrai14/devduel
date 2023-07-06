@@ -54,7 +54,6 @@ def handle_message(data):
     leading_value = client_decks[leading_player][0].get("stats", {}).get(stat)
     non_leading_value = client_decks[non_leading_player][0].get("stats", {}).get(stat)
 
-    print(leading_value > non_leading_value)
     emit(
         "data", client_decks[non_leading_player][1], to=client_sids[non_leading_player]
     )
