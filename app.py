@@ -38,7 +38,6 @@ def handle_username(username):
             emit("data", client_decks[username][0], to=request.sid)
 
 
-# incomplete
 @socketio.on("disconnect")
 def handle_disconnect(username):
     if username in client_usernames:
@@ -51,13 +50,22 @@ def handle_message(data):
     non_leading_player = next(
         username for username in client_usernames if username != leading_player
     )
+
     leading_value = client_decks[leading_player][0].get("stats", {}).get(stat)
     non_leading_value = client_decks[non_leading_player][0].get("stats", {}).get(stat)
 
+    if leading_value > non_leading_value:
+        transfer_card(non_leading_player, leading_player)
+        print("Transfer card from non-leading to leading player")
+    elif non_leading_value > leading_value:
+        print("Transfer card from leading to non-leading player")
+    else:
+        print("Both players lose their card")
+
     emit(
-        "data", client_decks[non_leading_player][1], to=client_sids[non_leading_player]
+        "data", client_decks[non_leading_player][0], to=client_sids[non_leading_player]
     )
-    emit("data", client_decks[leading_player][1], to=client_sids[leading_player])
+    emit("data", client_decks[leading_player][0], to=client_sids[leading_player])
 
 
 if __name__ == "__main__":
