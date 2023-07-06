@@ -106,3 +106,4 @@ def test_find_by_job_availability(db_connection):
         Card(20, 'Perl', 35, 46342, 148867, 6, 1)
     ]
     assert cards == expected_cards
+

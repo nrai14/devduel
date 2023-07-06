@@ -1,5 +1,9 @@
 import os
 from flask import Flask, request
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Create a new Flask app
 app = Flask(__name__)
