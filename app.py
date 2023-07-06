@@ -35,8 +35,6 @@ If draw, both cards added to black hole
 Winner goes first next round
 '''
 @app.route("/gameplay", methods=["GET", "POST"])
-# define the countdown func.
-
 def game():
     connection = get_flask_database_connection(app)
 
