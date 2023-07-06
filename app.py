@@ -1,22 +1,52 @@
-import os
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import os
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
+from cards import cards_player_1, cards_player_2
 
 load_dotenv()
 
-# Create a new Flask app
 app = Flask(__name__)
+CORS(app, origins="http://localhost:5173")
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
+clients = []
 
-# == Your Routes Here ==
-@app.route('/', methods=['GET'])
-def get_home():
-    return "hello jasmine!"
 
-# all renders JSON
+@app.route("/")
+def index():
+    return "Hello, World!"
 
-# These lines start the server if you run this file directly
-# They also start the server configured to use the test database
-# if started in test mode.
-if __name__ == '__main__':
-    app.run(debug=True, port=int(os.environ.get('PORT', 5000)))
+
+@socketio.on("username")
+def handle_username(username):
+    if username not in clients:
+        clients.append(username)
+        if clients[0] == username:
+            emit("data", cards_player_1, to=request.sid)
+        elif clients[1] == username:
+            emit("data", cards_player_2, to=request.sid)
+
+    elif username in clients:
+        if clients[0] == username:
+            emit("data", cards_player_1, to=request.sid)
+        elif clients[1] == username:
+            emit("data", cards_player_2, to=request.sid)
+
+
+@socketio.on("disconnect")
+def handle_disconnect(username):
+    if username in clients:
+        clients.remove(username)
+
+
+@socketio.on("message")
+def handle_message(data):
+    username = data.get("username")
+    stat = data.get("stat")
+    print(f"received message: {stat} from: {username}")
+    emit("message", data)
+
+
+if __name__ == "__main__":
+    socketio.run(app)
