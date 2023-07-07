@@ -37,7 +37,7 @@ def handle_username(username):
     global leading_player
 
     if not username or len(client_usernames) >= 2:
-        return
+        socketio.emit("message", f"game in progress :(")
 
     if username not in client_usernames:
         client_usernames.append(username)
