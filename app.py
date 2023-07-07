@@ -28,8 +28,8 @@ def initialize_decks():
         card_repository = CardRepository(connection)
         all_cards = card_repository.all()
         random.shuffle(all_cards)
-        player_1_deck = all_cards[0:2]
-        player_2_deck = all_cards[11:13]
+        player_1_deck = all_cards[0:10]
+        player_2_deck = all_cards[11:20]
 
 
 @socketio.on("username")
