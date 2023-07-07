@@ -27,8 +27,8 @@ def initialize_decks():
         card_repository = CardRepository(connection)
         all_cards = card_repository.all()
         random.shuffle(all_cards)
-        player_1_deck = all_cards[0:10]
-        player_2_deck = all_cards[11:20]
+        player_1_deck = all_cards[0:2]
+        player_2_deck = all_cards[11:13]
 
 
 @socketio.on("username")
@@ -80,26 +80,44 @@ def handle_message(data):
         leading_deck = client_decks[leading_player]
         non_leading_deck = client_decks[non_leading_player]
 
-        if leading_value > non_leading_value:
-            print("transfer card from non-leading to leading player")
+    if leading_value > non_leading_value:
+        print("transfer card from non-leading to leading player")
+        if len(client_decks[non_leading_player]) > 1:
             transfer_card(non_leading_deck, leading_deck)
             new_leading_player = leading_player
             emit("message", "You won this round!", to=client_sids[leading_player])
             emit("message", "You lost this round!", to=client_sids[non_leading_player])
+        else:
+            emit(
+                "result",
+                f"{non_leading_player} has run out of cards, {leading_player} wins!",
+            )
 
-        elif non_leading_value > leading_value:
-            print("transfer card from leading player to non-leading player")
+    elif non_leading_value > leading_value:
+        print("transfer card from leading player to non-leading player")
+        if len(client_decks[leading_player]) > 1:
             transfer_card(leading_deck, non_leading_deck)
             new_leading_player = non_leading_player
             emit("message", "You won this round!", to=client_sids[non_leading_player])
             emit("message", "You lost this round!", to=client_sids[leading_player])
-
         else:
-            print("both players lose their card")
+            emit(
+                "result",
+                f"{leading_player} has run out of cards, {non_leading_player} wins!",
+            )
+
+    else:
+        print("both players lose their card")
+        if (
+            len(client_decks[leading_player]) > 1
+            and len(client_decks[non_leading_player]) > 1
+        ):
             remove_both_cards(leading_deck, non_leading_deck)
             new_leading_player = leading_player
             emit("message", "It's a tie!", to=client_sids[leading_player])
             emit("message", "It's a tie!", to=client_sids[non_leading_player])
+        else:
+            emit("result", f"neither player has any more cards, it's a tie!")
 
         if client_decks[non_leading_player]:
             emit(
@@ -107,15 +125,11 @@ def handle_message(data):
                 client_decks[non_leading_player][0],
                 to=client_sids[non_leading_player],
             )
-        else:
-            emit("data", "Your deck is empty!", to=client_sids[non_leading_player])
 
         if client_decks[leading_player]:
             emit(
                 "data", client_decks[leading_player][0], to=client_sids[leading_player]
             )
-        else:
-            emit("data", "Your deck is empty!", to=client_sids[leading_player])
 
         leading_player = new_leading_player
 
