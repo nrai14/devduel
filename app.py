@@ -12,6 +12,7 @@ CORS(app, origins="http://localhost:5173")
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 
 leading_player = None
+new_leading_player = None
 client_usernames = []
 client_decks = {}
 client_sids = {}
@@ -57,21 +58,27 @@ def handle_username(username):
 
 @socketio.on("disconnect")
 def handle_disconnect(username):
+    global leading_player
     if username in client_usernames:
         client_usernames.remove(username)
+        if username == leading_player:
+            leading_player = next((username for username in client_usernames), None)
 
 
 @socketio.on("message")
 def handle_message(data):
-    global leading_player
+    global leading_player, new_leading_player
     username = data.get("username")
+
+    if username != leading_player:
+        return
+
+    stat = data.get("stat", 0)
+    non_leading_player = next(
+        username for username in client_usernames if username != leading_player
+    )
+
     if username == leading_player:
-        stat = data.get("stat")
-
-        non_leading_player = next(
-            username for username in client_usernames if username != leading_player
-        )
-
         leading_value = client_decks[leading_player][0].get("stats", {}).get(stat)
         non_leading_value = (
             client_decks[non_leading_player][0].get("stats", {}).get(stat)
@@ -80,58 +87,64 @@ def handle_message(data):
         leading_deck = client_decks[leading_player]
         non_leading_deck = client_decks[non_leading_player]
 
-    if leading_value > non_leading_value:
-        print("transfer card from non-leading to leading player")
-        if len(client_decks[non_leading_player]) > 1:
-            transfer_card(non_leading_deck, leading_deck)
-            new_leading_player = leading_player
-            emit("message", "You won this round!", to=client_sids[leading_player])
-            emit("message", "You lost this round!", to=client_sids[non_leading_player])
+        if leading_value > non_leading_value:
+            print("transfer card from non-leading to leading player")
+            if len(client_decks[non_leading_player]) > 1:
+                transfer_card(non_leading_deck, leading_deck)
+                new_leading_player = leading_player
+                emit("message", "You won this round!", to=client_sids[leading_player])
+                emit(
+                    "message",
+                    "You lost this round!",
+                    to=client_sids[non_leading_player],
+                )
+            else:
+                socketio.emit(
+                    "result",
+                    f"{non_leading_player} has run out of cards, {leading_player} wins!",
+                )
+
+        elif non_leading_value > leading_value:
+            print("transfer card from leading player to non-leading player")
+            if len(client_decks[leading_player]) > 1:
+                transfer_card(leading_deck, non_leading_deck)
+                new_leading_player = non_leading_player
+                emit(
+                    "message", "You won this round!", to=client_sids[non_leading_player]
+                )
+                emit("message", "You lost this round!", to=client_sids[leading_player])
+            else:
+                socketio.emit(
+                    "result",
+                    f"{leading_player} has run out of cards, {non_leading_player} wins!",
+                )
+
         else:
-            emit(
-                "result",
-                f"{non_leading_player} has run out of cards, {leading_player} wins!",
-            )
+            print("both players lose their card")
+            if (
+                len(client_decks[leading_player]) > 1
+                and len(client_decks[non_leading_player]) > 1
+            ):
+                remove_both_cards(leading_deck, non_leading_deck)
+                new_leading_player = leading_player
+                emit("message", "It's a tie!", to=client_sids[leading_player])
+                emit("message", "It's a tie!", to=client_sids[non_leading_player])
+            else:
+                socketio.emit(
+                    "result", f"neither player has any more cards, it's a tie!"
+                )
 
-    elif non_leading_value > leading_value:
-        print("transfer card from leading player to non-leading player")
-        if len(client_decks[leading_player]) > 1:
-            transfer_card(leading_deck, non_leading_deck)
-            new_leading_player = non_leading_player
-            emit("message", "You won this round!", to=client_sids[non_leading_player])
-            emit("message", "You lost this round!", to=client_sids[leading_player])
-        else:
-            emit(
-                "result",
-                f"{leading_player} has run out of cards, {non_leading_player} wins!",
-            )
+    if client_decks[leading_player]:
+        emit("data", client_decks[leading_player][0], to=client_sids[leading_player])
 
-    else:
-        print("both players lose their card")
-        if (
-            len(client_decks[leading_player]) > 1
-            and len(client_decks[non_leading_player]) > 1
-        ):
-            remove_both_cards(leading_deck, non_leading_deck)
-            new_leading_player = leading_player
-            emit("message", "It's a tie!", to=client_sids[leading_player])
-            emit("message", "It's a tie!", to=client_sids[non_leading_player])
-        else:
-            emit("result", f"neither player has any more cards, it's a tie!")
+    if client_decks[non_leading_player]:
+        emit(
+            "data",
+            client_decks[non_leading_player][0],
+            to=client_sids[non_leading_player],
+        )
 
-        if client_decks[non_leading_player]:
-            emit(
-                "data",
-                client_decks[non_leading_player][0],
-                to=client_sids[non_leading_player],
-            )
-
-        if client_decks[leading_player]:
-            emit(
-                "data", client_decks[leading_player][0], to=client_sids[leading_player]
-            )
-
-        leading_player = new_leading_player
+    leading_player = new_leading_player
 
 
 if __name__ == "__main__":
