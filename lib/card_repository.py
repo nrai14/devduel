@@ -135,9 +135,7 @@ class CardRepository:
         return cards
 
     def update_all_job_availabilities(self):
-        api_url = self.requester.get(
-            "https://www.reed.co.uk/api/1.0/search?keywords={keywords}"
-        )
+        api_url = "https://www.reed.co.uk/api/1.0/search"
         cards = self.all()
 
         excluded_ids = [1, 2, 3, 4, 6, 7, 11, 15]
@@ -150,9 +148,17 @@ class CardRepository:
 
             programming_language = card["name"]
 
-            # Make the API request to reed.co.uk
-            response = requests.get(api_url, params={"keywords": programming_language})
+            # Create Basic Authentication header
+            auth_header = "Basic " + "ZTk0N2NiOWUtMWYxNi00YTk1LTk3ZDgtOTcxMjgzNmIyMmMxOg=="
 
+            # Set the headers in the API request
+            headers = {
+                "Authorization": auth_header,
+            }
+
+            # Make the API request to reed.co.uk
+            response = requests.get(api_url, params={"keywords": programming_language + " developer"}, headers=headers)
+            
             if response.status_code == 200:
                 job_listings = response.json()["results"]
                 job_availability = len(job_listings)
@@ -160,7 +166,7 @@ class CardRepository:
                 # Update the job_availability field for the current card in the database
                 self.update_card_job_availability(card["id"], job_availability)
             else:
-                raise Exception("Error")
+                raise Exception(f"Error: {response.status_code}")
 
         return response.json()
 
