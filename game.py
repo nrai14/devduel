@@ -53,7 +53,7 @@ def game():
     # 5 minute timer starts
     duration = 300
     start_time = time.time()
-        
+
     while len(player_1_deck) != 0 and len(player_2_deck) != 0:
         # Exit out of the game loop if play exceeds 5 minutes
         if time.time() - start_time > duration:
@@ -65,7 +65,7 @@ def game():
         card_2_id = player_2_deck[0]
         print(f"PLAYER 1 CARD ID: {card_1_id}")
         print(f"PLAYER 2 CARD ID: {card_2_id}")
-        
+
         player_1_card = repository.find_by_id(card_1_id)
         player_2_card = repository.find_by_id(card_2_id)
 
@@ -108,38 +108,5 @@ def game():
         print("player 1 deck", player_1_deck)
         print("player 2 deck", player_2_deck)
         print("black hole", black_hole)
-    
+
     return str(player_1_deck)
-
-@socketio.on("username")
-def handle_username(username):
-    if username not in clients:
-        clients.append(username)
-        if clients[0] == username:
-            emit("data", cards_player_1, to=request.sid)
-        elif clients[1] == username:
-            emit("data", cards_player_2, to=request.sid)
-
-    elif username in clients:
-        if clients[0] == username:
-            emit("data", cards_player_1, to=request.sid)
-        elif clients[1] == username:
-            emit("data", cards_player_2, to=request.sid)
-
-
-@socketio.on("disconnect")
-def handle_disconnect(username):
-    if username in clients:
-        clients.remove(username)
-
-
-@socketio.on("message")
-def handle_message(data):
-    username = data.get("username")
-    stat = data.get("stat")
-    print(f"received message: {stat} from: {username}")
-    emit("message", data)
-
-
-if __name__ == "__main__":
-    socketio.run(app)
