@@ -35,6 +35,10 @@ def initialize_decks():
 @socketio.on("username")
 def handle_username(username):
     global leading_player
+
+    if not username or len(client_usernames) >= 2:
+        return
+
     if username not in client_usernames:
         client_usernames.append(username)
         client_sids[username] = request.sid
