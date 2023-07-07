@@ -168,8 +168,6 @@ class CardRepository:
             else:
                 raise Exception(f"Error: {response.status_code}")
 
-        return response.json()
-
     def update_card_job_availability(self, card_id, job_availability):
         update_query = "UPDATE cards SET job_availability = %s WHERE id = %s"
         self._connection.execute(update_query, [job_availability, card_id])

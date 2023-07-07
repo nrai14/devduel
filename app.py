@@ -44,6 +44,8 @@ def handle_username(username):
     if username not in client_usernames:
         client_usernames.append(username)
         client_sids[username] = request.sid
+        if len(client_usernames) == 2:  # Randomise which player goes first
+            leading_player = random.choice(client_usernames)
         if client_usernames[0] == username:
             leading_player = username
             client_decks[username] = player_1_deck
@@ -60,7 +62,6 @@ def handle_username(username):
         elif client_usernames[1] == username:
             client_sids[username] = request.sid
             emit("data", client_decks[username][0], to=request.sid)
-
 
 @socketio.on("disconnect")
 def handle_disconnect(username):
