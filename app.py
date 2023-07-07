@@ -5,6 +5,7 @@ import random
 from helpers.adjust_deck import transfer_card, remove_both_cards
 from lib.database_connection import get_flask_database_connection
 from lib.card_repository import CardRepository
+import requests
 
 
 app = Flask(__name__)
@@ -25,11 +26,12 @@ def initialize_decks():
     global player_1_deck, player_2_deck
     with app.app_context():
         connection = get_flask_database_connection(app)
-        card_repository = CardRepository(connection)
+        card_repository = CardRepository(connection, requests)
+        card_repository.update_all_job_availabilities()
         all_cards = card_repository.all()
         random.shuffle(all_cards)
-        player_1_deck = all_cards[0:2]
-        player_2_deck = all_cards[11:13]
+        player_1_deck = all_cards[0:10]
+        player_2_deck = all_cards[11:20]
 
 
 @socketio.on("username")

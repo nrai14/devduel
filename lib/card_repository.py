@@ -3,9 +3,9 @@ import requests
 
 
 class CardRepository:
-    def __init__(self, connection) -> None:
+    def __init__(self, connection, requester) -> None:
         self._connection = connection
-        # self.requester = requester
+        self.requester = requester
 
     def all(self):
         rows = self._connection.execute("SELECT * from cards ORDER BY id")
@@ -140,8 +140,15 @@ class CardRepository:
         )
         cards = self.all()
 
+        excluded_ids = [1, 2, 3, 4, 6, 7, 11, 15]
+
         for card in cards:
-            programming_language = card.language_name
+            # Skip languages with more than 100 job postings
+            id_number = card["id"]
+            if id_number in excluded_ids:
+                continue
+
+            programming_language = card["name"]
 
             # Make the API request to reed.co.uk
             response = requests.get(api_url, params={"keywords": programming_language})
@@ -151,7 +158,7 @@ class CardRepository:
                 job_availability = len(job_listings)
 
                 # Update the job_availability field for the current card in the database
-                self.update_card_job_availability(card.id, job_availability)
+                self.update_card_job_availability(card["id"], job_availability)
             else:
                 raise Exception("Error")
 
