@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import random
 from helpers.adjust_deck import transfer_card, remove_both_cards
 from lib.database_connection import get_flask_database_connection
@@ -19,7 +19,6 @@ client_sids = {}
 player_1_deck = []
 player_2_deck = []
 black_hole = []
-
 
 def initialize_decks():
     global player_1_deck, player_2_deck
