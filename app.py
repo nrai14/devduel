@@ -27,6 +27,7 @@ def initialize_decks():
         connection = get_flask_database_connection(app)
         card_repository = CardRepository(connection)
         all_cards = card_repository.all()
+        print(all_cards)
         random.shuffle(all_cards)
         player_1_deck = all_cards[0:2]
         player_2_deck = all_cards[11:13]
