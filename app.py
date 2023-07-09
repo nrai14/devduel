@@ -70,14 +70,32 @@ def handle_username(data):
             emit("data", client_decks[username][0], to=request.sid)
 
 
-@socketio.on("disconnect")
-def handle_disconnect():
+# @socketio.on("disconnect")
+# def handle_disconnect():
+#     global leading_player
+#     username = socket_to_username.get(request.sid)
+#     if username in client_usernames:
+#         client_usernames.remove(username)
+#         if username == leading_player:
+#             leading_player = next((username for username in client_usernames), None)
+
+
+@socketio.on("thinking_stat")
+def handle_thinking_stat(stat):
     global leading_player
     username = socket_to_username.get(request.sid)
-    if username in client_usernames:
-        client_usernames.remove(username)
-        if username == leading_player:
-            leading_player = next((username for username in client_usernames), None)
+
+    if username != leading_player:
+        return
+
+    non_leading_player = next(
+        username for username in client_usernames if username != leading_player
+    )
+    emit(
+        "thinking_stat",
+        f"{username} is thinking about selecting {stat} ...",
+        to=client_sids[non_leading_player],
+    )
 
 
 @socketio.on("message")
