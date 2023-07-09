@@ -28,7 +28,6 @@ def initialize_decks():
         connection = get_flask_database_connection(app)
         card_repository = CardRepository(connection)
         all_cards = card_repository.all()
-        print(all_cards)
         random.shuffle(all_cards)
         player_1_deck = all_cards[0:2]
         player_2_deck = all_cards[11:13]
@@ -90,12 +89,16 @@ def handle_message(data):
         return
 
     stat = data.get("stat", 0)
+
     non_leading_player = next(
         username for username in client_usernames if username != leading_player
     )
 
     if username == leading_player:
+        leading_language = client_decks[leading_player][0].get("name")
         leading_value = client_decks[leading_player][0].get("stats", {}).get(stat)
+
+        non_leading_language = client_decks[non_leading_player][0].get("name")
         non_leading_value = (
             client_decks[non_leading_player][0].get("stats", {}).get(stat)
         )
@@ -108,13 +111,18 @@ def handle_message(data):
             if len(client_decks[non_leading_player]) > 1:
                 transfer_card(non_leading_deck, leading_deck)
                 new_leading_player = leading_player
-                emit("message", "You won this round!", to=client_sids[leading_player])
                 emit(
                     "message",
-                    "You lost this round!",
+                    f"{leading_language} {stat} > {non_leading_language}. You won this round!",
+                    to=client_sids[leading_player],
+                )
+                emit(
+                    "message",
+                    f"{non_leading_language} {stat} < {leading_language}. You lost this round!",
                     to=client_sids[non_leading_player],
                 )
             else:
+                socketio.emit("message", "game over!", to=client_sids[leading_player])
                 socketio.emit(
                     "result",
                     f"{non_leading_player} has run out of cards, {leading_player} wins!",
@@ -126,10 +134,17 @@ def handle_message(data):
                 transfer_card(leading_deck, non_leading_deck)
                 new_leading_player = non_leading_player
                 emit(
-                    "message", "You won this round!", to=client_sids[non_leading_player]
+                    "message",
+                    f"{non_leading_language} {stat} > {leading_language}. You won this round!",
+                    to=client_sids[non_leading_player],
                 )
-                emit("message", "You lost this round!", to=client_sids[leading_player])
+                emit(
+                    "message",
+                    f"{leading_language} {stat} < {non_leading_language}. You lost this round!",
+                    to=client_sids[leading_player],
+                )
             else:
+                socketio.emit("message", "game over!", to=client_sids[leading_player])
                 socketio.emit(
                     "result",
                     f"{leading_player} has run out of cards, {non_leading_player} wins!",
@@ -146,6 +161,7 @@ def handle_message(data):
                 emit("message", "It's a tie!", to=client_sids[leading_player])
                 emit("message", "It's a tie!", to=client_sids[non_leading_player])
             else:
+                socketio.emit("message", "game over!", to=client_sids[leading_player])
                 socketio.emit(
                     "result", f"neither player has any more cards, it's a tie!"
                 )
