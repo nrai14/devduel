@@ -44,8 +44,9 @@ def handle_username(data):
         emit("message", "please create a username!", to=request.sid)
         return
 
-    if len(client_usernames) >= 2:
+    if username not in client_usernames and len(client_usernames) >= 2:
         emit("message", "this room is full!", to=request.sid)
+        return
 
     socket_to_username[request.sid] = username
 
