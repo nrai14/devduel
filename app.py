@@ -19,6 +19,7 @@ client_sids = {}
 player_1_deck = []
 player_2_deck = []
 black_hole = []
+socket_to_username = {}
 
 
 def initialize_decks():
@@ -34,11 +35,19 @@ def initialize_decks():
 
 
 @socketio.on("username")
-def handle_username(username):
+def handle_username(data):
     global leading_player
 
-    if not username or len(client_usernames) >= 2:
+    username = data.get("username", None)
+
+    if not username:
+        emit("message", "please create a username!", to=request.sid)
         return
+
+    if len(client_usernames) >= 2:
+        emit("message", "this room is full!", to=request.sid)
+
+    socket_to_username[request.sid] = username
 
     if username not in client_usernames:
         client_usernames.append(username)
@@ -62,8 +71,9 @@ def handle_username(username):
 
 
 @socketio.on("disconnect")
-def handle_disconnect(username):
+def handle_disconnect():
     global leading_player
+    username = socket_to_username.get(request.sid)
     if username in client_usernames:
         client_usernames.remove(username)
         if username == leading_player:
