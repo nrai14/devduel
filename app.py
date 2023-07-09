@@ -38,6 +38,7 @@ def handle_username(data):
     global leading_player
 
     username = data.get("username", None)
+    print(username)
 
     if not username:
         emit("message", "please create a username!", to=request.sid)
@@ -65,9 +66,13 @@ def handle_username(data):
     elif username in client_usernames:
         if client_usernames[0] == username:
             username_to_socket[username] = request.sid
+            if leading_player == username:
+                emit("leader", True, to=request.sid)
             emit("data", client_decks[username][0], to=request.sid)
         elif client_usernames[1] == username:
             username_to_socket[username] = request.sid
+            if leading_player == username:
+                emit("leader", True, to=request.sid)
             emit("data", client_decks[username][0], to=request.sid)
 
 
@@ -156,12 +161,12 @@ def handle_message(data):
                 new_leading_player = non_leading_player
                 emit(
                     "message",
-                    f"{non_leading_language} {stat} > {leading_language}. You won this round!",
+                    f"{non_leading_language} {stat} > {leading_language}. You won this round; you're now the leader!",
                     to=username_to_socket[non_leading_player],
                 )
                 emit(
                     "message",
-                    f"{leading_language} {stat} < {non_leading_language}. You lost this round!",
+                    f"{leading_language} {stat} < {non_leading_language}. You lost this round; you're no longer the leader!",
                     to=username_to_socket[leading_player],
                 )
             else:
@@ -192,6 +197,10 @@ def handle_message(data):
                 socketio.emit(
                     "result", f"neither player has any more cards, it's a tie!"
                 )
+
+    if new_leading_player != leading_player:
+        emit("leader", True, to=username_to_socket[new_leading_player])
+        emit("leader", False, to=username_to_socket[leading_player])
 
     if client_decks[leading_player]:
         emit(
