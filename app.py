@@ -15,10 +15,10 @@ leading_player = None
 new_leading_player = None
 client_usernames = []
 client_decks = {}
-client_sids = {}
 player_1_deck = []
 player_2_deck = []
 black_hole = []
+username_to_socket = {}
 socket_to_username = {}
 
 
@@ -51,22 +51,23 @@ def handle_username(data):
 
     if username not in client_usernames:
         client_usernames.append(username)
-        client_sids[username] = request.sid
+        username_to_socket[username] = request.sid
         if client_usernames[0] == username:
             leading_player = username
             client_decks[username] = player_1_deck
+            emit("leader", True, to=request.sid)
             emit("data", player_1_deck[0], to=request.sid)
         elif client_usernames[1] == username:
             client_decks[username] = player_2_deck
-            client_sids[username] = request.sid
+            username_to_socket[username] = request.sid
             emit("data", player_2_deck[0], to=request.sid)
 
     elif username in client_usernames:
         if client_usernames[0] == username:
-            client_sids[username] = request.sid
+            username_to_socket[username] = request.sid
             emit("data", client_decks[username][0], to=request.sid)
         elif client_usernames[1] == username:
-            client_sids[username] = request.sid
+            username_to_socket[username] = request.sid
             emit("data", client_decks[username][0], to=request.sid)
 
 
@@ -94,7 +95,7 @@ def handle_thinking_stat(stat):
     emit(
         "thinking_stat",
         f"{username} is thinking about selecting {stat} ...",
-        to=client_sids[non_leading_player],
+        to=username_to_socket[non_leading_player],
     )
 
 
@@ -132,15 +133,17 @@ def handle_message(data):
                 emit(
                     "message",
                     f"{leading_language} {stat} > {non_leading_language}. You won this round!",
-                    to=client_sids[leading_player],
+                    to=username_to_socket[leading_player],
                 )
                 emit(
                     "message",
                     f"{non_leading_language} {stat} < {leading_language}. You lost this round!",
-                    to=client_sids[non_leading_player],
+                    to=username_to_socket[non_leading_player],
                 )
             else:
-                socketio.emit("message", "game over!", to=client_sids[leading_player])
+                socketio.emit(
+                    "message", "game over!", to=username_to_socket[leading_player]
+                )
                 socketio.emit(
                     "result",
                     f"{non_leading_player} has run out of cards, {leading_player} wins!",
@@ -154,15 +157,17 @@ def handle_message(data):
                 emit(
                     "message",
                     f"{non_leading_language} {stat} > {leading_language}. You won this round!",
-                    to=client_sids[non_leading_player],
+                    to=username_to_socket[non_leading_player],
                 )
                 emit(
                     "message",
                     f"{leading_language} {stat} < {non_leading_language}. You lost this round!",
-                    to=client_sids[leading_player],
+                    to=username_to_socket[leading_player],
                 )
             else:
-                socketio.emit("message", "game over!", to=client_sids[leading_player])
+                socketio.emit(
+                    "message", "game over!", to=username_to_socket[leading_player]
+                )
                 socketio.emit(
                     "result",
                     f"{leading_player} has run out of cards, {non_leading_player} wins!",
@@ -176,22 +181,30 @@ def handle_message(data):
             ):
                 remove_both_cards(leading_deck, non_leading_deck)
                 new_leading_player = leading_player
-                emit("message", "It's a tie!", to=client_sids[leading_player])
-                emit("message", "It's a tie!", to=client_sids[non_leading_player])
+                emit("message", "It's a tie!", to=username_to_socket[leading_player])
+                emit(
+                    "message", "It's a tie!", to=username_to_socket[non_leading_player]
+                )
             else:
-                socketio.emit("message", "game over!", to=client_sids[leading_player])
+                socketio.emit(
+                    "message", "game over!", to=username_to_socket[leading_player]
+                )
                 socketio.emit(
                     "result", f"neither player has any more cards, it's a tie!"
                 )
 
     if client_decks[leading_player]:
-        emit("data", client_decks[leading_player][0], to=client_sids[leading_player])
+        emit(
+            "data",
+            client_decks[leading_player][0],
+            to=username_to_socket[leading_player],
+        )
 
     if client_decks[non_leading_player]:
         emit(
             "data",
             client_decks[non_leading_player][0],
-            to=client_sids[non_leading_player],
+            to=username_to_socket[non_leading_player],
         )
 
     leading_player = new_leading_player
