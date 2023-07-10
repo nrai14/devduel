@@ -6,7 +6,6 @@ import requests
 load_dotenv()
 reed_api_key = os.getenv("REED_API_KEY")
 
-
 class CardRepository:
     def __init__(self, connection, requester) -> None:
         self._connection = connection
@@ -142,7 +141,7 @@ class CardRepository:
     def update_all_job_availabilities(self):
         api_url = "https://www.reed.co.uk/api/1.0/search"
         cards = self.all()
-
+        print(reed_api_key)
         excluded_ids = [1, 2, 3, 4, 6, 7, 11, 15]
 
         for card in cards:
