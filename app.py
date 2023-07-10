@@ -47,11 +47,13 @@ def get_results():
 
 @app.route("/waiting_room")
 def get_waiting_room():
+    print(waiting_room)
     return jsonify(waiting_room)
 
 
 @socketio.on("waiting_room")
 def handle_username(data):
+    print(waiting_room)
     username = data
     waiting_room.append(username)
 
