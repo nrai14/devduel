@@ -75,7 +75,6 @@ def handle_username(data):
             leading_player = random.choice(client_usernames)
             emit("leader", True, to=username_to_socket[leading_player])
             socketio.emit("message", f"{leading_player} is the leading player")
-            # to do
             socketio.emit("start_timer", True)
             start_time = time.time()
 
