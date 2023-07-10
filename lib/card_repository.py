@@ -167,7 +167,6 @@ class CardRepository:
                 params={"keywords": programming_language + " developer"},
                 headers=headers,
             )
-            print(card)
             if response.status_code == 200:
                 job_listings = response.json()["results"]
                 job_availability = len(job_listings)
@@ -176,7 +175,6 @@ class CardRepository:
                 self.update_card_job_availability(card["id"], job_availability)
             else:
                 raise Exception(f"Error: {response.status_code}")
-            print(card)
 
     def update_card_job_availability(self, card_id, job_availability):
         update_query = "UPDATE cards SET job_availability = %s WHERE id = %s"
