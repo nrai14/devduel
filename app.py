@@ -1,10 +1,11 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import random
 from helpers.adjust_deck import transfer_card, remove_both_cards
 from lib.database_connection import get_flask_database_connection
 from lib.card_repository import CardRepository
+import requests
 
 
 app = Flask(__name__)
@@ -20,15 +21,17 @@ player_1_deck = []
 player_2_deck = []
 black_hole = []
 
+
 def initialize_decks():
     global player_1_deck, player_2_deck
     with app.app_context():
         connection = get_flask_database_connection(app)
-        card_repository = CardRepository(connection)
+        card_repository = CardRepository(connection, requests)
+        card_repository.update_all_job_availabilities()
         all_cards = card_repository.all()
         random.shuffle(all_cards)
-        player_1_deck = all_cards[0:2]
-        player_2_deck = all_cards[11:13]
+        player_1_deck = all_cards[0:10]
+        player_2_deck = all_cards[11:20]
 
 
 @socketio.on("username")
@@ -41,6 +44,8 @@ def handle_username(username):
     if username not in client_usernames:
         client_usernames.append(username)
         client_sids[username] = request.sid
+        if len(client_usernames) == 2:  # Randomise which player goes first
+            leading_player = random.choice(client_usernames)
         if client_usernames[0] == username:
             leading_player = username
             client_decks[username] = player_1_deck
