@@ -76,6 +76,7 @@ def handle_username(data):
             emit("leader", True, to=username_to_socket[leading_player])
             socketio.emit("message", f"{leading_player} is the leading player")
             socketio.emit("start_timer", True)
+            socketio.emit("countdown", (duration - (time.time() - start_time)))
             start_time = time.time()
 
     elif username in client_usernames:
@@ -84,11 +85,13 @@ def handle_username(data):
             if leading_player == username:
                 emit("leader", True, to=request.sid)
             emit("data", client_decks[username][0], to=request.sid)
+            emit("countdown", duration - (time.time() - start_time), to=request.sid)
         elif client_usernames[1] == username:
             username_to_socket[username] = request.sid
             if leading_player == username:
                 emit("leader", True, to=request.sid)
             emit("data", client_decks[username][0], to=request.sid)
+            emit("countdown", duration - (time.time() - start_time), to=request.sid)
 
 
 # @socketio.on("disconnect")
