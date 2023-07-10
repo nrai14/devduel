@@ -15,6 +15,7 @@ socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 
 leading_player = None
 new_leading_player = None
+waiting_room = []
 client_usernames = []
 client_decks = {}
 player_1_deck = []
@@ -43,6 +44,13 @@ def initialize_decks():
 def get_results():
     return jsonify(current_score)
 
+@app.route("/waitingroom")
+def get_waiting_room():
+    return jsonify(waiting_room)
+
+@socketio.on("waiting_room")
+def handle_waiting_players(data):
+    waiting_room.append(data.get("username"))
 
 @socketio.on("username")
 def handle_username(data):
