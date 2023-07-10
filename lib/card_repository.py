@@ -1,5 +1,10 @@
 from lib.card import Card
+from dotenv import load_dotenv
+import os
 import requests
+
+load_dotenv()
+reed_api_key = os.getenv("REED_API_KEY")
 
 
 class CardRepository:
@@ -17,7 +22,7 @@ class CardRepository:
                 "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",  # replace with actual image url
                 "stats": {
                     "age": row["age"],
-                    "avg_salary": row["av_salary"],
+                    "avg_salary": row["avg_salary"],
                     "downloads": row["downloads"],
                     "popularity": row["popularity"],
                     "job_availability": row["job_availability"],
@@ -38,7 +43,7 @@ class CardRepository:
             card["id"],
             card["language_name"],
             card["age"],
-            card["av_salary"],
+            card["avg_salary"],
             card["downloads"],
             card["popularity"],
             card["job_availability"],
@@ -54,15 +59,15 @@ class CardRepository:
             card["id"],
             card["language_name"],
             card["age"],
-            card["av_salary"],
+            card["avg_salary"],
             card["downloads"],
             card["popularity"],
             card["job_availability"],
         )
 
-    def find_by_av_salary(self, av_salary):
+    def find_by_avg_salary(self, avg_salary):
         rows = self._connection.execute(
-            "SELECT * from cards WHERE av_salary = %s", [av_salary]
+            "SELECT * from cards WHERE avg_salary = %s", [avg_salary]
         )
         if not rows:
             raise Exception("Average salary not listed, please try again.")
@@ -72,7 +77,7 @@ class CardRepository:
             card["id"],
             card["language_name"],
             card["age"],
-            card["av_salary"],
+            card["avg_salary"],
             card["downloads"],
             card["popularity"],
             card["job_availability"],
@@ -90,7 +95,7 @@ class CardRepository:
             card["id"],
             card["language_name"],
             card["age"],
-            card["av_salary"],
+            card["avg_salary"],
             card["downloads"],
             card["popularity"],
             card["job_availability"],
@@ -108,7 +113,7 @@ class CardRepository:
             card["id"],
             card["language_name"],
             card["age"],
-            card["av_salary"],
+            card["avg_salary"],
             card["downloads"],
             card["popularity"],
             card["job_availability"],
@@ -126,7 +131,7 @@ class CardRepository:
                 row["id"],
                 row["language_name"],
                 row["age"],
-                row["av_salary"],
+                row["avg_salary"],
                 row["downloads"],
                 row["popularity"],
                 row["job_availability"],
@@ -149,7 +154,7 @@ class CardRepository:
             programming_language = card["name"]
 
             # Create Basic Authentication header
-            auth_header = "Basic " + "ZTk0N2NiOWUtMWYxNi00YTk1LTk3ZDgtOTcxMjgzNmIyMmMxOg=="
+            auth_header = "Basic " + reed_api_key
 
             # Set the headers in the API request
             headers = {
@@ -157,8 +162,12 @@ class CardRepository:
             }
 
             # Make the API request to reed.co.uk
-            response = requests.get(api_url, params={"keywords": programming_language + " developer"}, headers=headers)
-            
+            response = requests.get(
+                api_url,
+                params={"keywords": programming_language + " developer"},
+                headers=headers,
+            )
+            print(card)
             if response.status_code == 200:
                 job_listings = response.json()["results"]
                 job_availability = len(job_listings)
@@ -167,6 +176,7 @@ class CardRepository:
                 self.update_card_job_availability(card["id"], job_availability)
             else:
                 raise Exception(f"Error: {response.status_code}")
+            print(card)
 
     def update_card_job_availability(self, card_id, job_availability):
         update_query = "UPDATE cards SET job_availability = %s WHERE id = %s"

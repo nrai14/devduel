@@ -6,15 +6,15 @@ CREATE TABLE cards (
     id SERIAL PRIMARY KEY,
     language_name text,
     age int,
-    av_salary int,
+    avg_salary int,
     downloads int,
     popularity int,
     job_availability int
 );
 
-INSERT INTO cards 
-    (language_name, age, av_salary, downloads, popularity, job_availability) 
-VALUES 
+INSERT INTO cards
+    (language_name, age, avg_salary, downloads, popularity, job_availability)
+VALUES
     ('Javascript', 28, 71457, 12529489, 15, 1700),
     ('Python', 32, 67500, 90232242, 20, 875),
     ('Go', 14,  65000, 9959490, 12, 315),

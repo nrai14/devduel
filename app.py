@@ -63,6 +63,7 @@ def handle_username(username):
             client_sids[username] = request.sid
             emit("data", client_decks[username][0], to=request.sid)
 
+
 @socketio.on("disconnect")
 def handle_disconnect(username):
     global leading_player
