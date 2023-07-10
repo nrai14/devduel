@@ -1,10 +1,11 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-import random
 from helpers.adjust_deck import transfer_card, remove_both_cards
 from lib.database_connection import get_flask_database_connection
 from lib.card_repository import CardRepository
+import random
+import requests
 
 
 app = Flask(__name__)
@@ -26,7 +27,8 @@ def initialize_decks():
     global player_1_deck, player_2_deck
     with app.app_context():
         connection = get_flask_database_connection(app)
-        card_repository = CardRepository(connection)
+        card_repository = CardRepository(connection, requests)
+        card_repository.update_all_job_availabilities()
         all_cards = card_repository.all()
         random.shuffle(all_cards)
         player_1_deck = all_cards[0:10]
@@ -38,7 +40,6 @@ def handle_username(data):
     global leading_player
 
     username = data.get("username", None)
-    print(username)
 
     if not username:
         emit("message", "please create a username!", to=request.sid)
@@ -54,14 +55,16 @@ def handle_username(data):
         client_usernames.append(username)
         username_to_socket[username] = request.sid
         if client_usernames[0] == username:
-            leading_player = username
             client_decks[username] = player_1_deck
-            emit("leader", True, to=request.sid)
             emit("data", player_1_deck[0], to=request.sid)
+            leading_player = username
         elif client_usernames[1] == username:
             client_decks[username] = player_2_deck
             username_to_socket[username] = request.sid
             emit("data", player_2_deck[0], to=request.sid)
+            leading_player = random.choice(client_usernames)
+            emit("leader", True, to=username_to_socket[leading_player])
+            socketio.emit("message", f"{leading_player} is the leading player")
 
     elif username in client_usernames:
         if client_usernames[0] == username:

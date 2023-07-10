@@ -1,11 +1,16 @@
 from lib.card import Card
+from dotenv import load_dotenv
+import os
 import requests
+
+load_dotenv()
+reed_api_key = os.getenv("REED_API_KEY")
 
 
 class CardRepository:
-    def __init__(self, connection) -> None:
+    def __init__(self, connection, requester) -> None:
         self._connection = connection
-        # self.requester = requester
+        self.requester = requester
 
     def all(self):
         rows = self._connection.execute("SELECT * from cards ORDER BY id")
@@ -135,27 +140,41 @@ class CardRepository:
         return cards
 
     def update_all_job_availabilities(self):
-        api_url = self.requester.get(
-            "https://www.reed.co.uk/api/1.0/search?keywords={keywords}"
-        )
+        api_url = "https://www.reed.co.uk/api/1.0/search"
         cards = self.all()
 
+        excluded_ids = [1, 2, 3, 4, 6, 7, 11, 15]
+
         for card in cards:
-            programming_language = card.language_name
+            # Skip languages with more than 100 job postings
+            id_number = card["id"]
+            if id_number in excluded_ids:
+                continue
+
+            programming_language = card["name"]
+
+            # Create Basic Authentication header
+            auth_header = "Basic " + reed_api_key
+
+            # Set the headers in the API request
+            headers = {
+                "Authorization": auth_header,
+            }
 
             # Make the API request to reed.co.uk
-            response = requests.get(api_url, params={"keywords": programming_language})
-
+            response = requests.get(
+                api_url,
+                params={"keywords": programming_language + " developer"},
+                headers=headers,
+            )
             if response.status_code == 200:
                 job_listings = response.json()["results"]
                 job_availability = len(job_listings)
 
                 # Update the job_availability field for the current card in the database
-                self.update_card_job_availability(card.id, job_availability)
+                self.update_card_job_availability(card["id"], job_availability)
             else:
-                raise Exception("Error")
-
-        return response.json()
+                raise Exception(f"Error: {response.status_code}")
 
     def update_card_job_availability(self, card_id, job_availability):
         update_query = "UPDATE cards SET job_availability = %s WHERE id = %s"
