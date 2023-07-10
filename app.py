@@ -78,8 +78,6 @@ def handle_username(data):
             socketio.emit("message", f"{leading_player} is the leading player")
             socketio.emit("start_timer", True)
             start_time = time.time()
-            print(time.time())
-            print(start_time)
             socketio.emit("countdown", (duration - (time.time() - start_time)))
 
     elif username in client_usernames:
