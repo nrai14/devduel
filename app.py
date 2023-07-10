@@ -9,7 +9,6 @@ import requests
 import time
 
 
-
 app = Flask(__name__)
 CORS(app, origins="http://localhost:5173")
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
@@ -38,16 +37,18 @@ def initialize_decks():
         random.shuffle(all_cards)
         player_1_deck = all_cards[0:10]
         player_2_deck = all_cards[11:20]
-    
+
+
 @app.route("/results")
 def get_results():
     return jsonify(current_score)
+
 
 @socketio.on("username")
 def handle_username(data):
     global leading_player
     global start_time
-    
+
     username = data.get("username", None)
 
     if not username:
@@ -76,8 +77,10 @@ def handle_username(data):
             emit("leader", True, to=username_to_socket[leading_player])
             socketio.emit("message", f"{leading_player} is the leading player")
             socketio.emit("start_timer", True)
-            socketio.emit("countdown", (duration - (time.time() - start_time)))
             start_time = time.time()
+            print(time.time())
+            print(start_time)
+            socketio.emit("countdown", (duration - (time.time() - start_time)))
 
     elif username in client_usernames:
         if client_usernames[0] == username:
@@ -85,13 +88,15 @@ def handle_username(data):
             if leading_player == username:
                 emit("leader", True, to=request.sid)
             emit("data", client_decks[username][0], to=request.sid)
-            emit("countdown", duration - (time.time() - start_time), to=request.sid)
+            if start_time:
+                emit("countdown", duration - (time.time() - start_time), to=request.sid)
         elif client_usernames[1] == username:
             username_to_socket[username] = request.sid
             if leading_player == username:
                 emit("leader", True, to=request.sid)
             emit("data", client_decks[username][0], to=request.sid)
-            emit("countdown", duration - (time.time() - start_time), to=request.sid)
+            if start_time:
+                emit("countdown", duration - (time.time() - start_time), to=request.sid)
 
 
 # @socketio.on("disconnect")
@@ -129,7 +134,7 @@ def handle_message(data):
     if time.time() - start_time > duration:
         socketio.emit("message", "game over! Go to the results page")
         return
-        
+
     username = data.get("username")
 
     if username != leading_player:
@@ -170,8 +175,7 @@ def handle_message(data):
                     to=username_to_socket[non_leading_player],
                 )
             else:
-                socketio.emit(
-                    "message", "game over!")
+                socketio.emit("message", "game over!")
                 socketio.emit(
                     "result",
                     f"{non_leading_player} has run out of cards, {leading_player} wins!",
@@ -194,8 +198,7 @@ def handle_message(data):
                     to=username_to_socket[leading_player],
                 )
             else:
-                socketio.emit(
-                    "message", "game over!")
+                socketio.emit("message", "game over!")
                 socketio.emit(
                     "result",
                     f"{leading_player} has run out of cards, {non_leading_player} wins!",
@@ -214,8 +217,7 @@ def handle_message(data):
                     "message", "It's a tie!", to=username_to_socket[non_leading_player]
                 )
             else:
-                socketio.emit(
-                    "message", "game over!")
+                socketio.emit("message", "game over!")
                 socketio.emit(
                     "result", f"neither player has any more cards, it's a tie!"
                 )
