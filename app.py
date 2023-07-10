@@ -57,7 +57,6 @@ def handle_username(data):
         if client_usernames[0] == username:
             client_decks[username] = player_1_deck
             emit("data", player_1_deck[0], to=request.sid)
-            leading_player = username
         elif client_usernames[1] == username:
             client_decks[username] = player_2_deck
             username_to_socket[username] = request.sid
@@ -105,6 +104,7 @@ def handle_thinking_stat(stat):
         f"{username} is thinking about selecting {stat} ...",
         to=username_to_socket[non_leading_player],
     )
+    socketio.emit("message", "")
 
 
 @socketio.on("message")
@@ -218,6 +218,8 @@ def handle_message(data):
             client_decks[non_leading_player][0],
             to=username_to_socket[non_leading_player],
         )
+
+    socketio.emit("thinking_stat", "")
 
     leading_player = new_leading_player
 
