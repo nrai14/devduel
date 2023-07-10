@@ -23,7 +23,7 @@ black_hole = []
 username_to_socket = {}
 socket_to_username = {}
 start_time = None
-duration = 300
+duration = 10
 current_score = {}
 
 
@@ -132,7 +132,7 @@ def handle_thinking_stat(stat):
 def handle_message(data):
     global leading_player, new_leading_player
     if time.time() - start_time > duration:
-        socketio.emit("message", "game over! Go to the results page")
+        socketio.emit("result", f"game over! Go to the results page")
         return
 
     username = data.get("username")
