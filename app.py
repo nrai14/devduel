@@ -54,6 +54,7 @@ def get_waiting_room():
 def handle_username(data):
     username = data
     waiting_room.append(username)
+    socketio.emit("update_players", waiting_room)
 
 
 @socketio.on("username")
