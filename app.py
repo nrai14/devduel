@@ -24,7 +24,7 @@ black_hole = []
 username_to_socket = {}
 socket_to_username = {}
 start_time = None
-duration = 90
+duration = 10
 current_score = {}
 
 
