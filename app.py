@@ -253,6 +253,15 @@ def handle_message(data):
             to=username_to_socket[non_leading_player],
         )
 
+    socketio.emit(
+        "update_assets",
+        {
+            leading_player: len(client_decks[leading_player]),
+            non_leading_player: len(client_decks[non_leading_player]),
+            "black_hole": len(black_hole),
+        },
+    )
+
     socketio.emit("thinking_stat", "")
 
     leading_player = new_leading_player
