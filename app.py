@@ -223,7 +223,7 @@ def handle_message(data):
                 len(client_decks[leading_player]) > 1
                 and len(client_decks[non_leading_player]) > 1
             ):
-                remove_both_cards(leading_deck, non_leading_deck)
+                remove_both_cards(leading_deck, non_leading_deck, black_hole)
                 new_leading_player = leading_player
                 emit("message", "It's a tie!", to=username_to_socket[leading_player])
                 emit(
