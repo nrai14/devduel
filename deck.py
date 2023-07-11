@@ -73,7 +73,7 @@ deck = [
     },
     {
         "id": 7,
-        "name": "C#",
+        "name": "CSharp",
         "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
         "stats": {
             "age": 23,

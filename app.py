@@ -24,7 +24,7 @@ black_hole = []
 username_to_socket = {}
 socket_to_username = {}
 start_time = None
-duration = 90
+duration = 10
 current_score = {}
 
 
@@ -223,7 +223,7 @@ def handle_message(data):
                 len(client_decks[leading_player]) > 1
                 and len(client_decks[non_leading_player]) > 1
             ):
-                remove_both_cards(leading_deck, non_leading_deck)
+                remove_both_cards(leading_deck, non_leading_deck, black_hole)
                 new_leading_player = leading_player
                 emit("message", "It's a tie!", to=username_to_socket[leading_player])
                 emit(
@@ -252,6 +252,15 @@ def handle_message(data):
             client_decks[non_leading_player][0],
             to=username_to_socket[non_leading_player],
         )
+
+    socketio.emit(
+        "update_assets",
+        {
+            leading_player: len(client_decks[leading_player]),
+            non_leading_player: len(client_decks[non_leading_player]),
+            "black_hole": len(black_hole),
+        },
+    )
 
     socketio.emit("thinking_stat", "")
 
