@@ -31,7 +31,6 @@ class Game:
         self.current_score = {}
 
         self.initialize_decks()
-        print(self.player_1_deck)
 
         # Flask routes
         self.app.route("/results")(self.get_results)
@@ -66,7 +65,6 @@ class Game:
     def clear_data(self):
         self.leading_player = None
         self.new_leading_player = None
-        self.waiting_room = []
         self.client_usernames = []
         self.client_decks = {}
         self.player_1_deck = []
