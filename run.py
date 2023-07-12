@@ -30,6 +30,7 @@ class Game:
         self.duration = 10
         self.current_score = {}
 
+        self.all_cards = self.create_deck()
         self.initialize_decks()
 
         # Flask routes
@@ -43,15 +44,18 @@ class Game:
         self.socketio.on("thinking_stat")(self.handle_thinking_stat)
         self.socketio.on("message")(self.handle_message)
 
-    def initialize_decks(self):
+    def create_deck(self):
         with self.app.app_context():
             connection = get_flask_database_connection(self.app)
             card_repository = CardRepository(connection, requests)
             card_repository.update_all_job_availabilities()
             all_cards = card_repository.all()
-            random.shuffle(all_cards)
-            self.player_1_deck = all_cards[:10]
-            self.player_2_deck = all_cards[10:20]
+            return all_cards
+
+    def initialize_decks(self):
+        random.shuffle(self.all_cards)
+        self.player_1_deck = self.all_cards[:10]
+        self.player_2_deck = self.all_cards[10:20]
 
     def run(self):
         self.socketio.run(self.app)
