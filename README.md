@@ -8,7 +8,7 @@ Welcome to DevDuel, the ultimate showdown of programming languages in the form o
 - [Installation & Usage](#installation--usage)
   - [Installation](#installation)
   - [Local Usage](#local-usage)
-  - [Databse](#technologies)
+  - [Database](#database)
 - [Play DevDuel](#play-devduel)
 - [Contributors](#contributors)
 
