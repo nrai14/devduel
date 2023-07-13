@@ -70,8 +70,8 @@ This should start the server, and you should see output indicating that the app 
 ```bash
 # 7. Open a web browser and visitto see the app in action.
 
-[http://localhost:5173](http://localhost:5173) 
 ```
+[http://localhost:5173](http://localhost:5173) 
 
 
 ## Contributors
