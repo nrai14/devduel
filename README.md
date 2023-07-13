@@ -47,7 +47,6 @@ CREATE DATABASE DEV_DEUL_TEST;
 \q
 ```
 
-```bash
 # 2. In another terminal, create a virtual environment (assuming you have Python 3 installed) by running the following command:
 python3 -m venv venv
 
@@ -63,14 +62,8 @@ source venv/bin/activate
 
 # 6. in another terminal tab from the same root folder, start the Flask web server:
 python app.py
-```
 
-This should start the server, and you should see output indicating that the app is running locally.
-
-```bash
-# 7. Open a web browser and visitto see the app in action.
-
-```
+# 7. Open a web browser and visit to see the app in action.
 [http://localhost:5173](http://localhost:5173) 
 
 
