@@ -35,7 +35,7 @@ class Game:
         self.username_to_socket = {}
         self.socket_to_username = {}
         self.start_time = None
-        self.duration = 10
+        self.duration = 120
         self.current_score = {}
 
         self.initialize_decks()
