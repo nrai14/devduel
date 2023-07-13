@@ -34,7 +34,7 @@ git clone https://github.com/adrianHards/react-devDuel.git
 
 ### Local Usage
 
-1. Open a terminal and navigate to the root folder of the cloned repository.
+Open a terminal and navigate to the root folder of the cloned repository.
 
 ### Database 
 
@@ -67,7 +67,11 @@ python app.py
 
 This should start the server, and you should see output indicating that the app is running locally.
 
-7. Open a web browser and visit [http://localhost:5173](http://localhost:5173) to see the app in action.
+```bash
+# 7. Open a web browser and visitto see the app in action.
+
+[http://localhost:5173](http://localhost:5173) 
+```
 
 
 ## Contributors
