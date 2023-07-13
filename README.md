@@ -9,6 +9,7 @@ Welcome to DevDuel, the ultimate showdown of programming languages in the form o
   - [Installation](#installation)
   - [Local Usage](#local-usage)
   - [Databse](#technologies)
+- [Play DevDuel](#play-devduel)
 - [Contributors](#contributors)
 
 ## Technologies
@@ -64,9 +65,13 @@ source venv/bin/activate
 # 6. in another terminal tab from the same root folder, start the Flask web server:
 python app.py
 
-# 7. Open a web browser and visit to see the app in action.
-[http://localhost:5173](http://localhost:5173) 
+# 7. Open a web browser and visit locahost:5173 to see the app in action.
 ```
+
+## Play DevDuel
+
+![](./about.gif)
+![](./game.gif)
 
 ## Contributors
 
