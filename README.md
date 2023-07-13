@@ -46,26 +46,27 @@ CREATE DATABASE DEV_DEUL_TEST;
 \l
 \q
 ```
+```bash
 
-### 2. In another terminal, create a virtual environment (assuming you have Python 3 installed) by running the following command:
+# 2. In another terminal, create a virtual environment (assuming you have Python 3 installed) by running the following command:
 python3 -m venv venv
 
-### 3. activate the virtual environment:
+# 3. activate the virtual environment:
 source venv/bin/activate
 
-### 4. install the Python dependencies:
+# 4. install the Python dependencies:
 pip install -r requirements.txt
 
-### 5 deactivate and activate virtual enviroments again
+# 5 deactivate and activate virtual enviroments again
 deactivate
 source venv/bin/activate
 
-### 6. in another terminal tab from the same root folder, start the Flask web server:
+# 6. in another terminal tab from the same root folder, start the Flask web server:
 python app.py
 
-### 7. Open a web browser and visit to see the app in action.
+# 7. Open a web browser and visit to see the app in action.
 [http://localhost:5173](http://localhost:5173) 
-
+```
 
 ## Contributors
 
