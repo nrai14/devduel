@@ -34,7 +34,7 @@ git clone https://github.com/adrianHards/react-devDuel.git
 
 ### Local Usage
 
-# 1. Open a terminal and navigate to the root folder of the cloned repository.
+1. Open a terminal and navigate to the root folder of the cloned repository.
 
 ### Database 
 
