@@ -22,7 +22,7 @@ class SetupRoutes:
         self.game.username_to_socket = {}
         self.game.socket_to_username = {}
         self.game.start_time = None
-        self.game.duration = 10
+        self.game.duration = 120
         self.game.current_score = {}
         self.game.initialize_decks()
         return {"message": f"Data cleared successfully"}, 200
