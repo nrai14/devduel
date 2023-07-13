@@ -1,6 +1,6 @@
 import pytest
 from lib.database_connection import DatabaseConnection
-from app import app
+from app import *
 
 
 @pytest.fixture

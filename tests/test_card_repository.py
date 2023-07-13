@@ -1,6 +1,6 @@
 import pytest
 from lib.card import Card
-from lib.card_repository import CardRepository
+from lib.card_repository import CardRepository, requests
 
 """
 When I call #all
