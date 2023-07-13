@@ -8,7 +8,7 @@ Welcome to DevDuel, the ultimate showdown of programming languages in the form o
 - [Installation & Usage](#installation--usage)
   - [Installation](#installation)
   - [Local Usage](#local-usage)
-- [Databse](#technologies)
+  - [Databse](#technologies)
 - [Contributors](#contributors)
 
 ## Technologies
@@ -34,40 +34,9 @@ git clone https://github.com/adrianHards/react-devDuel.git
 
 ### Local Usage
 
-- Using venv, run;
-    - Run `python3 -m venv venv` 
-    - Run `source venv/bin/activate`
-    - Run `pip install -r requirements.txt` to install dependencies
-    - Run `deactivate`
-    - Run `source venv/bin/activate`
-    - Run `python app.py` to start local server and run Devduel
+# 1. Open a terminal and navigate to the root folder of the cloned repository.
 
-
-1. Open a terminal and navigate to the root folder of the cloned repository.
-
-```bash
-# 2. create a virtual environment (assuming you have Python 3 installed) by running the following command:
-python3 -m venv venv
-
-# 3. activate the virtual environment:
-source venv/bin/activate
-
-# 4. install the Python dependencies:
-pip install -r requirements.txt
-
-# 4.1 at this point you may want to run the following before continuing:
-deactivate
-source venv/bin/activate
-
-# 7. in another terminal tab from the same root folder, start the Flask web server:
-python app.py
-```
-
-This should start the server, and you should see output indicating that the app is running locally.
-
-8. Open a web browser and visit [http://localhost:5000](http://localhost:5000) to see the app in action.
-
-## Database 
+### Database 
 
 Open a terminal, enter `psql`, and then the following commands:
 
@@ -77,6 +46,29 @@ CREATE DATABASE DEV_DEUL_TEST;
 \l
 \q
 ```
+
+```bash
+# 2. In another terminal, create a virtual environment (assuming you have Python 3 installed) by running the following command:
+python3 -m venv venv
+
+# 3. activate the virtual environment:
+source venv/bin/activate
+
+# 4. install the Python dependencies:
+pip install -r requirements.txt
+
+# 5 deactivate and activate virtual enviroments again
+deactivate
+source venv/bin/activate
+
+# 6. in another terminal tab from the same root folder, start the Flask web server:
+python app.py
+```
+
+This should start the server, and you should see output indicating that the app is running locally.
+
+7. Open a web browser and visit [http://localhost:5173](http://localhost:5173) to see the app in action.
+
 
 ## Contributors
 
